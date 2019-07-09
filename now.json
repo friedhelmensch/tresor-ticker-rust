@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "rust-test",
+  "builds": [
+    {
+      "src": "src/main.rs",
+      "use": "@now/rust"
+    }
+  ]
+}
