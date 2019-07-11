@@ -1,9 +1,23 @@
 use http::{self, Request, Response, StatusCode};
 use reqwest::header;
 
-fn handler(request: Request<()>) -> http::Result<Response<String>> {
+fn main() {
+ 
+ let request = Request::builder()
+    .method("GET")
+    .uri("https://www.rust-lang.org/")
+    .header("X-Custom-Foo", "Bar")
+    .body(())
+    .unwrap();
 
-  let test = String::from("Hallo World (Frank)");
+  let result = handler(request);
+  let response = result.unwrap();
+
+  println!("{}", response.body());
+}
+
+fn handler(request: Request<()>) -> http::Result<Response<String>> {
+  let test = String::from("Soon you will see the tresor menu here");
 
   let response = Response::builder()
     .status(StatusCode::OK)
