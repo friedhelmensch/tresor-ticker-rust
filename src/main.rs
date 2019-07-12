@@ -14,6 +14,7 @@ fn main() {
   let response = result.unwrap();
 
   println!("{}", response.body());
+  println!("{}", response.body());
 }
 
 fn handler(request: Request<()>) -> http::Result<Response<String>> {
