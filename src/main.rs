@@ -14,9 +14,10 @@ fn main() {
   let response = result.unwrap();
 
   println!("{}", response.body());
+  println!("{}", response.body());
 }
 
-fn handler(request: Request<()>) -> http::Result<Response<String>> {
+fn handler(_request: Request<()>) -> http::Result<Response<String>> {
   let test = String::from("Soon you will see the tresor menu here");
 
   let response = Response::builder()
