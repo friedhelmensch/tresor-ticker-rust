@@ -2,7 +2,7 @@
 
 The idea is to rebuild the current [Tresor Ticker](https://github.com/friedhelmensch/tresorticker) in Rust.
 
-The serice will be hostet on a "serverless" lambda at [zeit.co](https://zeit.co/blog/introducing-now-rust).
+The service will be hostet on a "serverless" lambda at [zeit.co](https://zeit.co/blog/introducing-now-rust).
 
 ## Current issues
 
