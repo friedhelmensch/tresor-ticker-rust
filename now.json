@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "rust-test",
+  "name": "tresor-ticker-rust",
   "builds": [
     {
       "src": "src/main.rs",
