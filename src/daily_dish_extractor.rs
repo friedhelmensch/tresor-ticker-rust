@@ -90,13 +90,39 @@ pub fn get_menu_by_days(preformatted_menu: Vec<&str>) -> HashMap<NaiveDate, Vec<
 
     let weekly_dishes = extract_weekly_dishes(preformatted_menu.to_owned());
     let daily_dishes = extract_daily_dishes(preformatted_menu.to_owned());
+    let start_and_end = extract_start_and_end_string(preformatted_menu[0]);
 
     return menu_by_day;
+}
+
+fn extract_start_and_end_string(line: &str) -> Vec<&str> {
+    let split_at_von: Vec<&str> = line.split_terminator("von").collect();
+
+    let start_and_end = split_at_von[0];
+    let split_start_and_end: Vec<&str> = start_and_end.split_terminator("bis").collect();
+
+    let start = split_start_and_end[0];
+    let start: Vec<&str> = start.split_terminator("Vom").collect();
+    let start = start[1].trim();
+
+    let end = split_start_and_end[1].trim();
+
+    return vec![start, end];
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn extract_start_and_end_string_test() {
+        let result =
+            extract_start_and_end_string("Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr");
+        let start = result[0];
+        let end = result[1];
+        assert_eq!(start, "5. August");
+        assert_eq!(end, "9. August");
+    }
     #[test]
     fn extract_weekly_dishes_test() {
         let input = vec![
