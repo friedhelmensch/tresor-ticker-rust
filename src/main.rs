@@ -1,6 +1,7 @@
 use http::{self, Request, Response, StatusCode};
 use reqwest;
 
+mod daily_dish_extractor;
 mod pre_formatter;
 
 fn main() {
