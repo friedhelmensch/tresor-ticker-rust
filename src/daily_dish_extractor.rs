@@ -19,11 +19,6 @@ fn extract_weekly_dishes(preformatted_menu: Vec<&str>) -> Vec<&str> {
 }
 
 fn extract_daily_dishes(preformatted_menu: Vec<&str>) -> HashMap<String, String> {
-    let index_of_taeglich = preformatted_menu
-        .iter()
-        .position(|&r| r == "Täglich")
-        .unwrap();
-
     let mut dishes_by_day = HashMap::new();
     for entry in &preformatted_menu {
         if entry == &"Montag"
