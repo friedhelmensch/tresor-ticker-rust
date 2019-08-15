@@ -6,5 +6,12 @@
       "src": "src/main.rs",
       "use": "@now/rust"
     }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "methods": ["GET"],
+      "dest": "src/main.rs"
+    }
   ]
 }
