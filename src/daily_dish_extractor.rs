@@ -2,14 +2,14 @@ extern crate chrono;
 use chrono::prelude::*;
 use std::collections::HashMap;
 
-fn extract_weekly_dishes(preformatted_menu: Vec<&str>) -> Vec<&str> {
+fn extract_weekly_dishes(preformatted_menu: Vec<String>) -> Vec<String> {
     let index_of_taeglich = preformatted_menu
         .iter()
-        .position(|&r| r == "Täglich")
+        .position(|r| r == "Täglich")
         .unwrap();
 
-    let weekly_dishes: Vec<&str> = preformatted_menu.to_owned().split_off(index_of_taeglich);
-    let weekly_dishes: Vec<&str> = weekly_dishes
+    let weekly_dishes: Vec<String> = preformatted_menu.to_owned().split_off(index_of_taeglich);
+    let weekly_dishes: Vec<String> = weekly_dishes
         .into_iter()
         .filter(|x| x != &"Täglich")
         .collect();
@@ -17,7 +17,7 @@ fn extract_weekly_dishes(preformatted_menu: Vec<&str>) -> Vec<&str> {
     return weekly_dishes;
 }
 
-fn extract_daily_dishes(preformatted_menu: Vec<&str>) -> HashMap<String, String> {
+fn extract_daily_dishes(preformatted_menu: Vec<String>) -> HashMap<String, String> {
     let mut dishes_by_day = HashMap::new();
     for entry in &preformatted_menu {
         if entry == &"Montag"
@@ -31,7 +31,7 @@ fn extract_daily_dishes(preformatted_menu: Vec<&str>) -> HashMap<String, String>
 
             dishes_by_day.insert(
                 entry.to_string(),
-                preformatted_menu[position_of_current_entry + 1].to_string(),
+                preformatted_menu[position_of_current_entry + 1].to_owned(),
             );
         }
     }
@@ -39,7 +39,7 @@ fn extract_daily_dishes(preformatted_menu: Vec<&str>) -> HashMap<String, String>
     return dishes_by_day;
 }
 
-pub fn get_menu_by_day(preformatted_menu: Vec<&str>, day: Weekday) -> Vec<String> {
+pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Vec<String> {
     let weekly_dishes = extract_weekly_dishes(preformatted_menu.to_owned());
     let daily_dishes_by_weekday = extract_daily_dishes(preformatted_menu.to_owned());
 
@@ -69,21 +69,21 @@ mod tests {
     #[test]
     fn extract_weekly_dishes_test() {
         let input = vec![
-            "Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr",
-            "Montag",
-            "Rahmschnitzel mit Spätzle  €  8.00",
-            "Dienstag",
-            "Gyros mit Tzatziki und Pommes €  8,00",
-            "Mittwoch",
-            "Hähnchencurry mit Reis  €  8,00",
-            "Donnerstag",
-            "BBQ   €  9,90",
-            "Freitag",
-            "Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00",
-            "Täglich",
-            "Fritz Kuhn ist Bürgermeister",
-            "Manuel Reiser hatte eine gute Idee",
-            "Heute gibts Erdbeeren",
+            String::from("Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr"),
+            String::from("Montag"),
+            String::from("Rahmschnitzel mit Spätzle  €  8.00"),
+            String::from("Dienstag"),
+            String::from("Gyros mit Tzatziki und Pommes €  8,00"),
+            String::from("Mittwoch"),
+            String::from("Hähnchencurry mit Reis  €  8,00"),
+            String::from("Donnerstag"),
+            String::from("BBQ   €  9,90"),
+            String::from("Freitag"),
+            String::from("Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00"),
+            String::from("Täglich"),
+            String::from("Fritz Kuhn ist Bürgermeister"),
+            String::from("Manuel Reiser hatte eine gute Idee"),
+            String::from("Heute gibts Erdbeeren"),
         ];
         let result = extract_weekly_dishes(input);
 
@@ -97,21 +97,21 @@ mod tests {
     #[test]
     fn extract_daily_dishes_test() {
         let input = vec![
-            "Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr",
-            "Montag",
-            "Rahmschnitzel mit Spätzle  €  8.00",
-            "Dienstag",
-            "Gyros mit Tzatziki und Pommes €  8,00",
-            "Mittwoch",
-            "Hähnchencurry mit Reis  €  8,00",
-            "Donnerstag",
-            "BBQ   €  9,90",
-            "Freitag",
-            "Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00",
-            "Täglich",
-            "Salatteller mit Pangasiusfilet  € 7,50",
-            "Chilli con Carne mit Brot € 7,00",
-            "Tagliatelle mit frischen Pfifferlingen € 8,90",
+            String::from("Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr"),
+            String::from("Montag"),
+            String::from("Rahmschnitzel mit Spätzle  €  8.00"),
+            String::from("Dienstag"),
+            String::from("Gyros mit Tzatziki und Pommes €  8,00"),
+            String::from("Mittwoch"),
+            String::from("Hähnchencurry mit Reis  €  8,00"),
+            String::from("Donnerstag"),
+            String::from("BBQ   €  9,90"),
+            String::from("Freitag"),
+            String::from("Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00"),
+            String::from("Täglich"),
+            String::from("Salatteller mit Pangasiusfilet  € 7,50"),
+            String::from("Chilli con Carne mit Brot € 7,00"),
+            String::from("Tagliatelle mit frischen Pfifferlingen € 8,90"),
         ];
         let result = extract_daily_dishes(input);
         println!("{:?}", result);
@@ -124,21 +124,21 @@ mod tests {
     #[test]
     fn get_menu_by_days_test() {
         let input = vec![
-            "Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr",
-            "Montag",
-            "Rahmschnitzel mit Spätzle  €  8.00",
-            "Dienstag",
-            "Gyros mit Tzatziki und Pommes €  8,00",
-            "Mittwoch",
-            "Hähnchencurry mit Reis  €  8,00",
-            "Donnerstag",
-            "BBQ   €  9,90",
-            "Freitag",
-            "Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00",
-            "Täglich",
-            "Salatteller mit Pangasiusfilet  € 7,50",
-            "Salatteller mit Pangasiusfilet  € 7,50",
-            "Tagliatelle mit frischen Pfifferlingen € 8,90",
+            String::from("Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr"),
+            String::from("Montag"),
+            String::from("Rahmschnitzel mit Spätzle  €  8.00"),
+            String::from("Dienstag"),
+            String::from("Gyros mit Tzatziki und Pommes €  8,00"),
+            String::from("Mittwoch"),
+            String::from("Hähnchencurry mit Reis  €  8,00"),
+            String::from("Donnerstag"),
+            String::from("BBQ   €  9,90"),
+            String::from("Freitag"),
+            String::from("Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00"),
+            String::from("Täglich"),
+            String::from("Salatteller mit Pangasiusfilet  € 7,50"),
+            String::from("Salatteller mit Pangasiusfilet  € 7,50"),
+            String::from("Tagliatelle mit frischen Pfifferlingen € 8,90"),
         ];
         let result = get_menu_by_day(input, Weekday::Mon);
         println!("{:?}", result);

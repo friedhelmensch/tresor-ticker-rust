@@ -30,7 +30,7 @@ fn handler(_request: Request<()>) -> http::Result<Response<String>> {
     .text()
     .unwrap();
 
-  let pre_formatted_text = pre_formatter::pre_format_text(&menu_as_raw_text);
+  let pre_formatted_text = pre_formatter::pre_format_text(menu_as_raw_text);
   let dishes_of_the_day =
     daily_dish_extractor::get_menu_by_day(pre_formatted_text, Utc::now().weekday());
 
@@ -40,7 +40,7 @@ fn handler(_request: Request<()>) -> http::Result<Response<String>> {
       prev + "<li>" + curr + "</li>"
     });
 
-  let html_formatted: String = format!("{}{}{}", "<ul>", html_formatted, "</ul>");
+  let html_formatted = format!("{}{}{}", "<ul>", html_formatted, "</ul>");
 
   let json_return_value = object! {
     "type" => "message",
