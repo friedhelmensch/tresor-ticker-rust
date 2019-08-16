@@ -12,6 +12,11 @@
       "src": "/",
       "methods": ["GET"],
       "dest": "src/main.rs"
+    },
+    {
+      "src": "/",
+      "methods": ["POST"],
+      "dest": "src/main.rs"
     }
   ]
 }
