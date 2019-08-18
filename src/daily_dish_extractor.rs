@@ -40,6 +40,10 @@ fn extract_daily_dishes(preformatted_menu: Vec<String>) -> HashMap<String, Strin
 }
 
 pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Vec<String> {
+    if day == Weekday::Sat || day == Weekday::Sun {
+        return vec![String::from("no menu on weekends")];
+    }
+
     let weekly_dishes = extract_weekly_dishes(preformatted_menu.to_owned());
     let daily_dishes_by_weekday = extract_daily_dishes(preformatted_menu.to_owned());
 
@@ -50,8 +54,7 @@ pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Vec<Stri
         Weekday::Wed => dish_of_the_day = daily_dishes_by_weekday["Mittwoch"].to_owned(),
         Weekday::Thu => dish_of_the_day = daily_dishes_by_weekday["Donnerstag"].to_owned(),
         Weekday::Fri => dish_of_the_day = daily_dishes_by_weekday["Freitag"].to_owned(),
-        Weekday::Sat => dish_of_the_day = daily_dishes_by_weekday["Samstag"].to_owned(),
-        Weekday::Sun => dish_of_the_day = daily_dishes_by_weekday["Sonntag"].to_owned(),
+        _ => panic!["You are not supposed to be here"],
     }
 
     let mut dishes_of_the_day: Vec<String> = Vec::new();
@@ -69,7 +72,6 @@ mod tests {
     #[test]
     fn extract_weekly_dishes_test() {
         let input = vec![
-            String::from("Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr"),
             String::from("Montag"),
             String::from("Rahmschnitzel mit Spätzle  €  8.00"),
             String::from("Dienstag"),
@@ -97,7 +99,6 @@ mod tests {
     #[test]
     fn extract_daily_dishes_test() {
         let input = vec![
-            String::from("Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr"),
             String::from("Montag"),
             String::from("Rahmschnitzel mit Spätzle  €  8.00"),
             String::from("Dienstag"),
@@ -124,7 +125,6 @@ mod tests {
     #[test]
     fn get_menu_by_days_test() {
         let input = vec![
-            String::from("Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr"),
             String::from("Montag"),
             String::from("Rahmschnitzel mit Spätzle  €  8.00"),
             String::from("Dienstag"),
@@ -149,6 +149,31 @@ mod tests {
             "Salatteller mit Pangasiusfilet  € 7,50".to_owned(),
             "Tagliatelle mit frischen Pfifferlingen € 8,90".to_owned(),
         ];
+        assert_eq!(result, expected_result);
+    }
+
+    #[test]
+    fn get_menu_by_days_sunday_test() {
+        let input = vec![
+            String::from("Montag"),
+            String::from("Rahmschnitzel mit Spätzle  €  8.00"),
+            String::from("Dienstag"),
+            String::from("Gyros mit Tzatziki und Pommes €  8,00"),
+            String::from("Mittwoch"),
+            String::from("Hähnchencurry mit Reis  €  8,00"),
+            String::from("Donnerstag"),
+            String::from("BBQ   €  9,90"),
+            String::from("Freitag"),
+            String::from("Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00"),
+            String::from("Täglich"),
+            String::from("Salatteller mit Pangasiusfilet  € 7,50"),
+            String::from("Salatteller mit Pangasiusfilet  € 7,50"),
+            String::from("Tagliatelle mit frischen Pfifferlingen € 8,90"),
+        ];
+        let result = get_menu_by_day(input, Weekday::Sun);
+        println!("{:?}", result);
+
+        let expected_result = vec!["no menu on weekends".to_owned()];
         assert_eq!(result, expected_result);
     }
 }

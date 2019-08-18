@@ -9,7 +9,6 @@ use json::stringify;
 mod daily_dish_extractor;
 mod pre_formatter;
 
-/*
 fn main() {
   let request = Request::builder()
     .method("GET")
@@ -22,7 +21,6 @@ fn main() {
 
   println!("{}", response.body());
 }
-*/
 
 fn handler(_request: Request<()>) -> http::Result<Response<String>> {
   let menu_as_raw_text = reqwest::get("https://tresormenuservice.friedhelmensch.now.sh/")
@@ -31,8 +29,8 @@ fn handler(_request: Request<()>) -> http::Result<Response<String>> {
     .unwrap();
 
   let pre_formatted_text = pre_formatter::pre_format_text(menu_as_raw_text);
-  let dishes_of_the_day =
-    daily_dish_extractor::get_menu_by_day(pre_formatted_text, Utc::now().weekday());
+  let menu = pre_formatter::split_date_and_dishes(pre_formatted_text);
+  let dishes_of_the_day = daily_dish_extractor::get_menu_by_day(menu.dishes, Utc::now().weekday());
 
   let html_formatted = dishes_of_the_day
     .iter()
