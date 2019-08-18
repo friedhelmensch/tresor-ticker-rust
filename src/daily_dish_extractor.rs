@@ -2,64 +2,50 @@ extern crate chrono;
 use chrono::prelude::*;
 use std::collections::HashMap;
 
-fn extract_weekly_dishes(preformatted_menu: Vec<String>) -> Vec<String> {
-    let index_of_taeglich = preformatted_menu
-        .iter()
-        .position(|r| r == "Täglich")
-        .unwrap();
+macro_rules! string_hashmap {
+    ($( $key: expr => $val: expr ),*) => {{
+         let mut map = ::std::collections::HashMap::new();
+         $( map.insert($key.to_string(), $val); )*
+         map
+    }}
+}
 
-    let weekly_dishes: Vec<String> = preformatted_menu.to_owned().split_off(index_of_taeglich);
-    let weekly_dishes: Vec<String> = weekly_dishes
+fn extract_weekly_dishes(preformatted_menu: &Vec<String>) -> Vec<String> {
+    return preformatted_menu
         .into_iter()
-        .filter(|x| x != &"Täglich")
+        .skip_while(|x| x != &"Täglich")
+        .skip(1)
+        .map(|x| x.to_owned())
         .collect();
-
-    return weekly_dishes;
 }
 
-fn extract_daily_dishes(preformatted_menu: Vec<String>) -> HashMap<String, String> {
-    let mut dishes_by_day = HashMap::new();
-    for entry in &preformatted_menu {
-        if entry == &"Montag"
-            || entry == &"Dienstag"
-            || entry == &"Mittwoch"
-            || entry == &"Donnerstag"
-            || entry == &"Freitag"
-        {
-            let position_of_current_entry =
-                preformatted_menu.iter().position(|r| r == entry).unwrap();
-
-            dishes_by_day.insert(
-                entry.to_string(),
-                preformatted_menu[position_of_current_entry + 1].to_owned(),
-            );
-        }
-    }
-
-    return dishes_by_day;
+fn create_weekday_map() -> HashMap<String, Weekday> {
+    return string_hashmap![
+        "Montag" => Weekday::Mon,
+        "Dienstag" => Weekday::Tue,
+        "Mittwoch" => Weekday::Wed,
+        "Donnerstag" => Weekday::Thu,
+        "Freitag" => Weekday::Fri,
+        "Samstag" => Weekday::Sat,
+        "Sonntag" => Weekday::Sun
+    ];
 }
 
-pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Vec<String> {
-    let weekly_dishes = extract_weekly_dishes(preformatted_menu.to_owned());
-    let daily_dishes_by_weekday = extract_daily_dishes(preformatted_menu.to_owned());
+fn extract_daily_dishes(preformatted_menu: &Vec<String>) -> HashMap<Weekday, String> {
+    let weekday_map = create_weekday_map();
+    return preformatted_menu
+        .iter()
+        .zip(preformatted_menu.iter().skip(1))
+        .filter(|x| weekday_map.contains_key(x.0))
+        .map(|x| (weekday_map[x.0], x.1.clone()))
+        .collect::<HashMap<Weekday, String>>();
+}
 
-    let dish_of_the_day;
-    match day {
-        Weekday::Mon => dish_of_the_day = daily_dishes_by_weekday["Montag"].to_owned(),
-        Weekday::Tue => dish_of_the_day = daily_dishes_by_weekday["Dienstag"].to_owned(),
-        Weekday::Wed => dish_of_the_day = daily_dishes_by_weekday["Mittwoch"].to_owned(),
-        Weekday::Thu => dish_of_the_day = daily_dishes_by_weekday["Donnerstag"].to_owned(),
-        Weekday::Fri => dish_of_the_day = daily_dishes_by_weekday["Freitag"].to_owned(),
-        Weekday::Sat => dish_of_the_day = daily_dishes_by_weekday["Samstag"].to_owned(),
-        Weekday::Sun => dish_of_the_day = daily_dishes_by_weekday["Sonntag"].to_owned(),
-    }
-
-    let mut dishes_of_the_day: Vec<String> = Vec::new();
-    dishes_of_the_day.push(dish_of_the_day);
-    for weekly_dish in weekly_dishes {
-        dishes_of_the_day.push(weekly_dish.to_owned());
-    }
-    return dishes_of_the_day;
+pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: &Weekday) -> Vec<String> {
+    return vec![
+        vec![(&extract_daily_dishes(&preformatted_menu)[day]).to_owned()],
+        extract_weekly_dishes(&preformatted_menu)
+    ].concat();
 }
 
 #[cfg(test)]
@@ -82,14 +68,14 @@ mod tests {
             String::from("Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00"),
             String::from("Täglich"),
             String::from("Fritz Kuhn ist Bürgermeister"),
-            String::from("Manuel Reiser hatte eine gute Idee"),
+            String::from("HAAAAANNNNNNNNNNEESSSS hatte eine gute Idee"),
             String::from("Heute gibts Erdbeeren"),
         ];
-        let result = extract_weekly_dishes(input);
+        let result = extract_weekly_dishes(&input);
 
         let expected_result = vec![
             "Fritz Kuhn ist Bürgermeister",
-            "Manuel Reiser hatte eine gute Idee",
+            "HAAAAANNNNNNNNNNEESSSS hatte eine gute Idee",
             "Heute gibts Erdbeeren",
         ];
         assert_eq!(result, expected_result);
@@ -113,13 +99,13 @@ mod tests {
             String::from("Chilli con Carne mit Brot € 7,00"),
             String::from("Tagliatelle mit frischen Pfifferlingen € 8,90"),
         ];
-        let result = extract_daily_dishes(input);
+        let result = extract_daily_dishes(&input);
         println!("{:?}", result);
-        assert!(result["Montag"] == "Rahmschnitzel mit Spätzle  €  8.00");
-        assert!(result["Dienstag"] == "Gyros mit Tzatziki und Pommes €  8,00");
-        assert!(result["Mittwoch"] == "Hähnchencurry mit Reis  €  8,00");
-        assert!(result["Donnerstag"] == "BBQ   €  9,90");
-        assert!(result["Freitag"] == "Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00");
+        assert!(result[&Weekday::Mon] == "Rahmschnitzel mit Spätzle  €  8.00");
+        assert!(result[&Weekday::Tue] == "Gyros mit Tzatziki und Pommes €  8,00");
+        assert!(result[&Weekday::Wed] == "Hähnchencurry mit Reis  €  8,00");
+        assert!(result[&Weekday::Thu] == "BBQ   €  9,90");
+        assert!(result[&Weekday::Fri] == "Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00");
     }
     #[test]
     fn get_menu_by_days_test() {
@@ -140,7 +126,7 @@ mod tests {
             String::from("Salatteller mit Pangasiusfilet  € 7,50"),
             String::from("Tagliatelle mit frischen Pfifferlingen € 8,90"),
         ];
-        let result = get_menu_by_day(input, Weekday::Mon);
+        let result = get_menu_by_day(input, &Weekday::Mon);
         println!("{:?}", result);
 
         let expected_result = vec![

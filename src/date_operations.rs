@@ -17,9 +17,8 @@ fn extract_start_and_end_string(line: &str) -> Vec<&str> {
     return vec![start, end];
 }
 
-
 fn get_date(day_and_month: &str, year: i32) -> NaiveDate {
-    let day_and_month: Vec<&str> = day_and_month
+    let day_and_month = day_and_month
         .split_terminator(".")
         .map(|x| x.trim())
         .collect();
@@ -47,7 +46,6 @@ fn get_date(day_and_month: &str, year: i32) -> NaiveDate {
     return NaiveDate::from_ymd(year, month, day);
 }
 
-
 fn get_dates_by_week_day(start: &str, end: &str, year: i32) -> HashMap<Weekday, NaiveDate> {
     let start = get_date(start, year);
     let end = get_date(end, year);
@@ -64,7 +62,7 @@ fn get_dates_by_week_day(start: &str, end: &str, year: i32) -> HashMap<Weekday, 
     return dates_by_week_day;
 }
 
-    #[cfg(test)]
+#[cfg(test)]
 mod tests {
     use super::*;
 

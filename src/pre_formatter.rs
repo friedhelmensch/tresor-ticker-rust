@@ -1,24 +1,11 @@
 pub fn pre_format_text(raw_text: String) -> Vec<String> {
-  let without_line_breaks: Vec<&str> = raw_text.split_terminator("\r\n").collect();
-  let without_empty_strings: Vec<&str> = without_line_breaks
-    .into_iter()
-    .filter(|x| !x.trim().is_empty())
-    .collect();
-  let without_white_spaces: Vec<&str> = without_empty_strings
-    .into_iter()
+  let invalid_strings = vec!["", "Wochenkarte", "----------------Page (0) Break----------------"];
+  return raw_text
+    .split_terminator("\r\n")
     .map(|x| x.trim())
-    .collect();
-  let without_unneeded_entries: Vec<&str> = without_white_spaces
-    .into_iter()
-    .filter(|x| x != &"Wochenkarte")
-    .filter(|x| x != &"----------------Page (0) Break----------------")
-    .collect();
-
-  let as_string_vector: Vec<String> = without_unneeded_entries
-    .into_iter()
+    .filter(|x| !invalid_strings.contains(x))
     .map(|x| x.to_owned())
     .collect();
-  return as_string_vector;
 }
 
 #[cfg(test)]

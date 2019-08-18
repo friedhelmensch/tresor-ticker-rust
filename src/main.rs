@@ -32,7 +32,7 @@ fn handler(_request: Request<()>) -> http::Result<Response<String>> {
 
   let pre_formatted_text = pre_formatter::pre_format_text(menu_as_raw_text);
   let dishes_of_the_day =
-    daily_dish_extractor::get_menu_by_day(pre_formatted_text, Utc::now().weekday());
+    daily_dish_extractor::get_menu_by_day(pre_formatted_text, &Utc::now().weekday());
 
   let html_formatted = dishes_of_the_day
     .iter()
