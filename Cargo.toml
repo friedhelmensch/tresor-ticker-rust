@@ -1,5 +1,5 @@
 [package]
-name = "tresor-ticker-rust"
+name = "tresor_ticker_rust"
 version = "0.1.0"
 edition = "2018"
 
