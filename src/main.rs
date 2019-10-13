@@ -1,5 +1,7 @@
 use http::{self, Request, Response, StatusCode};
+use now_lambda::{error::NowError, lambda, IntoResponse};
 use reqwest;
+use std::error::Error;
 
 extern crate tresor_ticker_rust;
 
@@ -22,7 +24,11 @@ fn main() {
 }
 */
 
-fn handler(_request: Request<()>) -> http::Result<Response<String>> {
+fn main() -> Result<(), Box<dyn Error>> {
+  Ok(lambda!(handler))
+}
+
+fn handler(_request: Request<()>) -> Result<impl IntoResponse, NowError> {
   let menu_as_raw_text = reqwest::get("https://tresormenuservice.friedhelmensch.now.sh/")
     .unwrap()
     .text()

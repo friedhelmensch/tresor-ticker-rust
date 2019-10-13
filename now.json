@@ -3,20 +3,20 @@
   "name": "tresor-ticker-rust",
   "builds": [
     {
-      "src": "src/main.rs",
-      "use": "@now/rust"
+      "src": "Cargo.toml",
+      "use": "now-rust"
     }
   ],
   "routes": [
     {
       "src": "/",
       "methods": ["GET"],
-      "dest": "src/main.rs"
+      "dest": "/tresor_ticker_rust"
     },
     {
       "src": "/",
       "methods": ["POST"],
-      "dest": "src/main.rs"
+      "dest": "/tresor_ticker_rust"
     }
   ]
 }
