@@ -11,15 +11,14 @@ pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Result<V
     let weekly_dishes = extract_weekly_dishes(preformatted_menu.to_owned());
     let daily_dishes_by_weekday = extract_daily_dishes(preformatted_menu.to_owned());
 
-    let dish_of_the_day;
-    match day {
-        Weekday::Mon => dish_of_the_day = daily_dishes_by_weekday["Montag"].to_owned(),
-        Weekday::Tue => dish_of_the_day = daily_dishes_by_weekday["Dienstag"].to_owned(),
-        Weekday::Wed => dish_of_the_day = daily_dishes_by_weekday["Mittwoch"].to_owned(),
-        Weekday::Thu => dish_of_the_day = daily_dishes_by_weekday["Donnerstag"].to_owned(),
-        Weekday::Fri => dish_of_the_day = daily_dishes_by_weekday["Freitag"].to_owned(),
+    let dish_of_the_day = match day {
+        Weekday::Mon => daily_dishes_by_weekday["Montag"].to_owned(),
+        Weekday::Tue => daily_dishes_by_weekday["Dienstag"].to_owned(),
+        Weekday::Wed => daily_dishes_by_weekday["Mittwoch"].to_owned(),
+        Weekday::Thu => daily_dishes_by_weekday["Donnerstag"].to_owned(),
+        Weekday::Fri => daily_dishes_by_weekday["Freitag"].to_owned(),
         _ => panic!["You are not supposed to be here"],
-    }
+    };
 
     let mut dishes_of_the_day: Vec<String> = Vec::new();
     dishes_of_the_day.push(dish_of_the_day);
