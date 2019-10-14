@@ -5,7 +5,6 @@ use std::error::Error;
 
 extern crate tresor_ticker_rust;
 
-use chrono::prelude::*;
 use json::object;
 use json::stringify;
 
@@ -20,7 +19,7 @@ fn main() {
   let result = handler(request);
   let response = result.unwrap();
 
-  println!("{}", response.body());
+  println!("{:?}", response.into_response().body());
 }
 */
 
@@ -34,15 +33,16 @@ fn handler(_request: Request<()>) -> Result<impl IntoResponse, NowError> {
     .text()
     .unwrap();
 
-  let pre_formatted_text = tresor_ticker_rust::pre_format_text(menu_as_raw_text);
-  let menu = tresor_ticker_rust::split_date_and_dishes(pre_formatted_text);
-  let dishes_of_the_day = tresor_ticker_rust::get_menu_by_day(menu.dishes, Utc::now().weekday());
+  let result = tresor_ticker_rust::get_dishes_of_the_day(menu_as_raw_text);
 
-  let html_formatted = dishes_of_the_day
-    .iter()
-    .fold(String::from(""), |prev, curr| {
-      prev + "<li>" + curr + "</li>"
-    });
+  let list_entries = match result {
+    Ok(dishes_of_the_day) => dishes_of_the_day,
+    Err(e) => vec![String::from("Error: ") + &e.message],
+  };
+
+  let html_formatted = list_entries.iter().fold(String::from(""), |prev, curr| {
+    prev + "<li>" + curr + "</li>"
+  });
 
   let html_formatted = format!("{}{}{}", "<ul>", html_formatted, "</ul>");
 

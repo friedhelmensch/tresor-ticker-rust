@@ -1,6 +1,33 @@
 extern crate chrono;
+use crate::operations::error::Error;
 use chrono::prelude::*;
 use std::collections::HashMap;
+
+pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Result<Vec<String>, Error> {
+    if day == Weekday::Sat || day == Weekday::Sun {
+        return Err(Error::new(String::from("no menu on weekends")));
+    }
+
+    let weekly_dishes = extract_weekly_dishes(preformatted_menu.to_owned());
+    let daily_dishes_by_weekday = extract_daily_dishes(preformatted_menu.to_owned());
+
+    let dish_of_the_day;
+    match day {
+        Weekday::Mon => dish_of_the_day = daily_dishes_by_weekday["Montag"].to_owned(),
+        Weekday::Tue => dish_of_the_day = daily_dishes_by_weekday["Dienstag"].to_owned(),
+        Weekday::Wed => dish_of_the_day = daily_dishes_by_weekday["Mittwoch"].to_owned(),
+        Weekday::Thu => dish_of_the_day = daily_dishes_by_weekday["Donnerstag"].to_owned(),
+        Weekday::Fri => dish_of_the_day = daily_dishes_by_weekday["Freitag"].to_owned(),
+        _ => panic!["You are not supposed to be here"],
+    }
+
+    let mut dishes_of_the_day: Vec<String> = Vec::new();
+    dishes_of_the_day.push(dish_of_the_day);
+    for weekly_dish in weekly_dishes {
+        dishes_of_the_day.push(weekly_dish.to_owned());
+    }
+    return Ok(dishes_of_the_day);
+}
 
 fn extract_weekly_dishes(preformatted_menu: Vec<String>) -> Vec<String> {
     let index_of_taeglich = preformatted_menu
@@ -37,32 +64,6 @@ fn extract_daily_dishes(preformatted_menu: Vec<String>) -> HashMap<String, Strin
     }
 
     return dishes_by_day;
-}
-
-pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Vec<String> {
-    if day == Weekday::Sat || day == Weekday::Sun {
-        return vec![String::from("no menu on weekends")];
-    }
-
-    let weekly_dishes = extract_weekly_dishes(preformatted_menu.to_owned());
-    let daily_dishes_by_weekday = extract_daily_dishes(preformatted_menu.to_owned());
-
-    let dish_of_the_day;
-    match day {
-        Weekday::Mon => dish_of_the_day = daily_dishes_by_weekday["Montag"].to_owned(),
-        Weekday::Tue => dish_of_the_day = daily_dishes_by_weekday["Dienstag"].to_owned(),
-        Weekday::Wed => dish_of_the_day = daily_dishes_by_weekday["Mittwoch"].to_owned(),
-        Weekday::Thu => dish_of_the_day = daily_dishes_by_weekday["Donnerstag"].to_owned(),
-        Weekday::Fri => dish_of_the_day = daily_dishes_by_weekday["Freitag"].to_owned(),
-        _ => panic!["You are not supposed to be here"],
-    }
-
-    let mut dishes_of_the_day: Vec<String> = Vec::new();
-    dishes_of_the_day.push(dish_of_the_day);
-    for weekly_dish in weekly_dishes {
-        dishes_of_the_day.push(weekly_dish.to_owned());
-    }
-    return dishes_of_the_day;
 }
 
 #[cfg(test)]
@@ -149,7 +150,7 @@ mod tests {
             "Salatteller mit Pangasiusfilet  € 7,50".to_owned(),
             "Tagliatelle mit frischen Pfifferlingen € 8,90".to_owned(),
         ];
-        assert_eq!(result, expected_result);
+        assert_eq!(result.unwrap(), expected_result);
     }
 
     #[test]
@@ -173,7 +174,9 @@ mod tests {
         let result = get_menu_by_day(input, Weekday::Sun);
         println!("{:?}", result);
 
-        let expected_result = vec!["no menu on weekends".to_owned()];
-        assert_eq!(result, expected_result);
+        match result {
+            Ok(_n) => panic!("expected error is missing"),
+            Err(e) => assert_eq!(e.message, String::from("no menu on weekends")),
+        };
     }
 }
