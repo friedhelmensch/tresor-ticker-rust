@@ -8,8 +8,8 @@ pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Result<V
         return Err(Error::new(String::from("no menu on weekends")));
     }
 
-    let weekly_dishes = extract_weekly_dishes(preformatted_menu.to_owned());
-    let daily_dishes_by_weekday = extract_daily_dishes(preformatted_menu.to_owned());
+    let weekly_dishes = extract_weekly_dishes(&preformatted_menu);
+    let daily_dishes_by_weekday = extract_daily_dishes(&preformatted_menu);
 
     let dish_of_the_day = match day {
         Weekday::Mon => daily_dishes_by_weekday["Montag"].to_owned(),
@@ -28,7 +28,7 @@ pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Result<V
     return Ok(dishes_of_the_day);
 }
 
-fn extract_weekly_dishes(preformatted_menu: Vec<String>) -> Vec<String> {
+fn extract_weekly_dishes(preformatted_menu: &Vec<String>) -> Vec<String> {
     let index_of_taeglich = preformatted_menu
         .iter()
         .position(|r| r == "Täglich")
@@ -43,9 +43,9 @@ fn extract_weekly_dishes(preformatted_menu: Vec<String>) -> Vec<String> {
     return weekly_dishes;
 }
 
-fn extract_daily_dishes(preformatted_menu: Vec<String>) -> HashMap<String, String> {
+fn extract_daily_dishes(preformatted_menu: &Vec<String>) -> HashMap<String, String> {
     let mut dishes_by_day = HashMap::new();
-    for entry in &preformatted_menu {
+    for entry in preformatted_menu {
         if entry == &"Montag"
             || entry == &"Dienstag"
             || entry == &"Mittwoch"
@@ -87,7 +87,7 @@ mod tests {
             String::from("Manuel Reiser hatte eine gute Idee"),
             String::from("Heute gibts Erdbeeren"),
         ];
-        let result = extract_weekly_dishes(input);
+        let result = extract_weekly_dishes(&input);
 
         let expected_result = vec![
             "Fritz Kuhn ist Bürgermeister",
@@ -114,7 +114,7 @@ mod tests {
             String::from("Chilli con Carne mit Brot € 7,00"),
             String::from("Tagliatelle mit frischen Pfifferlingen € 8,90"),
         ];
-        let result = extract_daily_dishes(input);
+        let result = extract_daily_dishes(&input);
         println!("{:?}", result);
         assert!(result["Montag"] == "Rahmschnitzel mit Spätzle  €  8.00");
         assert!(result["Dienstag"] == "Gyros mit Tzatziki und Pommes €  8,00");
