@@ -3,7 +3,8 @@ use time::Duration;
 
 pub fn get_date_of_monday(date_as_string: String, year: i32) -> NaiveDate {
     let start_and_end_date = extract_start_and_end_string(date_as_string);
-    return get_date(start_and_end_date[0].clone(), year);
+    let date_of_first_day_in_menu = get_date(start_and_end_date[0].clone(), year);
+    return get_date_of_monday_in_the_week(date_of_first_day_in_menu);
 }
 
 fn extract_start_and_end_string(line: String) -> Vec<String> {
@@ -81,6 +82,15 @@ mod tests {
         let date_as_string = String::from("Vom 29. Juli bis 2. August von 11.30 Uhr bis 14.00 Uhr");
         let expected_date = NaiveDate::from_ymd(2019, 7, 29);
         let result = get_date_of_monday(date_as_string, 2019);
+        assert_eq!(result, expected_date);
+    }
+
+    #[test]
+    fn get_date_of_monday_date_text_starting_on_tuesday() {
+        let date_as_string =
+            String::from("Vom 14. Januar bis 17. Januar von 11.30 Uhr bis 14.00 Uhr");
+        let expected_date = NaiveDate::from_ymd(2020, 1, 13);
+        let result = get_date_of_monday(date_as_string, 2020);
         assert_eq!(result, expected_date);
     }
 }
