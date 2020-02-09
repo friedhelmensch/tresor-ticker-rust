@@ -24,6 +24,10 @@ pub fn get_menu_by_day(preformatted_menu: Vec<String>, day: Weekday) -> Result<V
         _ => panic!["You are not supposed to be here"],
     };
 
+    if dish_of_the_day == "geschlossen" {
+        return Err(Error::new(String::from("Closed today. :-(")));
+    }
+
     let dishes_of_the_day: Vec<&str> = [dish_of_the_day]
         .iter()
         .chain(&weekly_dishes)
@@ -187,6 +191,33 @@ mod tests {
         match result {
             Ok(_n) => panic!("expected error is missing"),
             Err(e) => assert_eq!(e.message, String::from("no menu on weekends")),
+        };
+    }
+
+    #[test]
+    fn get_menu_by_day_on_a_closed_day() {
+        let input = vec![
+            String::from("Montag"),
+            String::from("geschlossen"),
+            String::from("Dienstag"),
+            String::from("Gyros mit Tzatziki und Pommes €  8,00"),
+            String::from("Mittwoch"),
+            String::from("Hähnchencurry mit Reis  €  8,00"),
+            String::from("Donnerstag"),
+            String::from("BBQ   €  9,90"),
+            String::from("Freitag"),
+            String::from("Tintenfischtulpen mit Rosmarinkartoffeln  €  8,00"),
+            String::from("Täglich"),
+            String::from("Salatteller mit Pangasiusfilet  € 7,50"),
+            String::from("Salatteller mit Pangasiusfilet  € 7,50"),
+            String::from("Tagliatelle mit frischen Pfifferlingen € 8,90"),
+        ];
+        let result = get_menu_by_day(input, Weekday::Mon);
+        println!("{:?}", result);
+
+        match result {
+            Ok(_n) => panic!("expected error is missing"),
+            Err(e) => assert_eq!(e.message, String::from("Closed today. :-(")),
         };
     }
 }
