@@ -1,3 +1,4 @@
+use crate::operations::error::Error;
 use std::fmt;
 
 pub struct Menu {
@@ -44,8 +45,11 @@ pub fn pre_format_text(raw_text: String) -> Vec<String> {
   return as_string_vector;
 }
 
+pub fn split_date_and_dishes(date_and_dishes: Vec<String>) -> Result<Menu, Error> {
+  if date_and_dishes.len() < 2 {
+    return Err(Error::new(String::from("Menu is in an invalid format.")));
+  }
 
-pub fn split_date_and_dishes(date_and_dishes: Vec<String>) -> Menu {
   let date = date_and_dishes[0].clone();
   let dishes = date_and_dishes.into_iter().skip(1).collect();
 
@@ -53,7 +57,7 @@ pub fn split_date_and_dishes(date_and_dishes: Vec<String>) -> Menu {
     date: date,
     dishes: dishes,
   };
-return menu;
+  return Ok(menu);
 }
 
 #[cfg(test)]
@@ -99,7 +103,7 @@ mod tests {
       ],
     };
 
-    let result = split_date_and_dishes(input);
+    let result = split_date_and_dishes(input).unwrap();
 
     assert_eq!(result, expected_result);
   }
@@ -126,5 +130,26 @@ mod tests {
       "Tagliatelle mit frischen Pfifferlingen € 8,90",
     ];
     assert_eq!(result, expected_result);
+  }
+
+  #[test]
+  fn pre_format_text_empty_test() {
+    let input = String::from("This is an invalid string");
+    let result = pre_format_text(input);
+    let expected_result = vec!["This is an invalid string"];
+    assert_eq!(result, expected_result);
+  }
+
+  #[test]
+  fn split_date_and_dishes_invalid_raw_text_test() {
+    let input = vec![String::from(
+      "Vom 5. August bis 9. August von 11.30 Uhr bis 14.00 Uhr",
+    )];
+    let result = split_date_and_dishes(input);
+
+    match result {
+      Ok(_n) => panic!("expected an error because of an invalid input menu but received Ok."),
+      Err(e) => assert_eq!(e.message, String::from("Menu is in an invalid format.")),
+    }
   }
 }
