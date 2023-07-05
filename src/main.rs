@@ -28,7 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn handler(_request: Request<()>) -> Result<impl IntoResponse, NowError> {
-  let menu_as_raw_text = reqwest::get("https://tresormenuservice.friedhelmensch.now.sh/")
+  let menu_as_raw_text = reqwest::get("https://tresormenuservice-friedhelmensch.vercel.app/")
     .unwrap()
     .text()
     .unwrap();
